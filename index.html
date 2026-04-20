@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>STEAM Robotics | FTC Team 34690</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&amp;family=IBM+Plex+Sans:wght@400;500;600;700&amp;family=Sora:wght@500;600;700&amp;display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #0c1524;
+      --bg-alt: #101a2c;
+      --surface: rgba(22, 35, 58, 0.9);
+      --surface-strong: #1a2942;
+      --surface-soft: rgba(255, 255, 255, 0.04);
+      --line: rgba(148, 171, 203, 0.2);
+      --line-strong: rgba(148, 171, 203, 0.34);
+      --text: #eff4fb;
+      --text-soft: #cdd8e6;
+      --text-muted: #9bacc4;
+      --accent: #ff6a2a;
+      --accent-soft: rgba(255, 106, 42, 0.16);
+      --secondary: #72acd8;
+      --secondary-soft: rgba(114, 172, 216, 0.16);
+      --shadow: 0 20px 50px rgba(0, 0, 0, 0.18);
+      --radius: 22px;
+      --radius-sm: 14px;
+      --container: min(1120px, calc(100% - 3rem));
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 100px;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 12%, rgba(114, 172, 216, 0.18), transparent 22%),
+        radial-gradient(circle at 88% 10%, rgba(255, 106, 42, 0.16), transparent 18%),
+        linear-gradient(180deg, #0c1524 0%, #101b2e 40%, #0b1421 100%);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 56px 56px;
+      mask-image: linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 82%);
+      pointer-events: none;
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(12, 21, 36, 0), rgba(12, 21, 36, 0.22));
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    body.menu-open {
+      overflow: hidden;
+    }
+
+    ::selection {
+      background: rgba(255, 106, 42, 0.35);
+      color: var(--text);
+    }
+
+    a {
+      color: inherit;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    button {
+      font: inherit;
+      color: inherit;
+    }
+
+    .container {
+      width: var(--container);
+      margin: 0 auto;
+    }
+
+    .section-pad {
+      padding: 5.5rem 0;
+    }
+
+    .section-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+      color: var(--secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.78rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    .section-label::before {
+      content: "";
+      width: 30px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.75;
+    }
+
+    .section-title {
+      max-width: 14ch;
+      margin-bottom: 1.1rem;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(2rem, 4vw, 3.4rem);
+      line-height: 1.08;
+      letter-spacing: -0.04em;
+    }
+
+    .section-title span {
+      color: var(--accent);
+    }
+
+    .section-desc {
+      max-width: 62ch;
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    .eyebrow {
+      color: var(--secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .surface-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.08s; }
+    .reveal-delay-2 { transition-delay: 0.16s; }
+    .reveal-delay-3 { transition-delay: 0.24s; }
+    .reveal-delay-4 { transition-delay: 0.32s; }
+
+    nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      padding: 1.1rem 0;
+      transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    nav.is-scrolled {
+      background: rgba(12, 21, 36, 0.82);
+      border-bottom: 1px solid rgba(148, 171, 203, 0.14);
+      box-shadow: 0 14px 30px rgba(0, 0, 0, 0.16);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .nav-shell {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.95rem 1.2rem;
+      border: 1px solid transparent;
+      border-radius: 18px;
+      transition: border-color 0.25s ease, background 0.25s ease;
+    }
+
+    nav.is-scrolled .nav-shell {
+      background: rgba(15, 24, 39, 0.68);
+      border-color: rgba(148, 171, 203, 0.12);
+    }
+
+    .nav-brand {
+      text-decoration: none;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 0.08rem;
+    }
+
+    .nav-brand-title {
+      font-family: "Sora", sans-serif;
+      font-size: 1.02rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+    }
+
+    .nav-brand-sub {
+      color: var(--text-muted);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .nav-toggle {
+      display: none;
+      width: 46px;
+      height: 46px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.03);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+    }
+
+    .nav-toggle span {
+      width: 18px;
+      height: 1.5px;
+      background: var(--text);
+      border-radius: 999px;
+      transition: transform 0.25s ease, opacity 0.25s ease;
+    }
+
+    nav.is-open .nav-toggle span:nth-child(1) {
+      transform: translateY(6.5px) rotate(45deg);
+    }
+
+    nav.is-open .nav-toggle span:nth-child(2) {
+      opacity: 0;
+    }
+
+    nav.is-open .nav-toggle span:nth-child(3) {
+      transform: translateY(-6.5px) rotate(-45deg);
+    }
+
+    .nav-links {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 1.35rem;
+    }
+
+    .nav-links a {
+      color: var(--text-soft);
+      text-decoration: none;
+      font-size: 0.94rem;
+      font-weight: 500;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color: var(--accent);
+    }
+
+    #hero {
+      padding: 9.5rem 0 5.5rem;
+    }
+
+    .hero-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(320px, 0.85fr);
+      gap: 2.5rem;
+      align-items: end;
+    }
+
+    .hero-copy {
+      max-width: 700px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.55rem 0.95rem;
+      margin-bottom: 1.35rem;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-soft);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: "";
+      width: 0.55rem;
+      height: 0.55rem;
+      border-radius: 999px;
+      background: var(--accent);
+      box-shadow: 0 0 0 6px var(--accent-soft);
+      flex: 0 0 auto;
+    }
+
+    .hero-title {
+      margin-bottom: 1rem;
+      font-family: "Sora", sans-serif;
+      font-size: clamp(3rem, 9vw, 5.9rem);
+      line-height: 0.96;
+      letter-spacing: -0.06em;
+    }
+
+    .hero-title span {
+      display: block;
+      color: var(--accent);
+    }
+
+    .hero-sub {
+      max-width: 58ch;
+      margin-bottom: 2.1rem;
+      color: var(--text-soft);
+      font-size: 1.12rem;
+    }
+
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.9rem;
+    }
+
+    .btn-primary,
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      min-height: 48px;
+      padding: 0.85rem 1.35rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #101a2c;
+      border: 1px solid transparent;
+    }
+
+    .btn-secondary {
+      border: 1px solid var(--line-strong);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text);
+    }
+
+    .btn-primary:hover,
+    .btn-secondary:hover,
+    .btn-primary:focus-visible,
+    .btn-secondary:focus-visible {
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary:hover,
+    .btn-secondary:focus-visible {
+      border-color: var(--secondary);
+      background: var(--secondary-soft);
+    }
+
+    .hero-panel {
+      padding: 1.5rem;
+    }
+
+    .hero-panel > p {
+      margin-bottom: 1rem;
+    }
+
+    .hero-list {
+      list-style: none;
+      display: grid;
+      gap: 0.9rem;
+      margin-bottom: 1.4rem;
+    }
+
+    .hero-list li {
+      padding: 0.95rem 1rem;
+      border: 1px solid rgba(148, 171, 203, 0.14);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .hero-list strong {
+      display: block;
+      margin-bottom: 0.2rem;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .hero-list span {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.9rem;
+    }
+
+    .stat-item {
+      padding: 1rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 171, 203, 0.12);
+    }
+
+    .stat-item strong {
+      display: block;
+      margin-bottom: 0.15rem;
+      font-family: "Sora", sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: -0.05em;
+    }
+
+    .stat-item span {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .section-divider {
+      width: var(--container);
+      margin: 0 auto;
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(148, 171, 203, 0.22), transparent);
+    }
+
+    #about,
+    #team {
+      background: rgba(255, 255, 255, 0.015);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .about-copy p + p {
+      margin-top: 1rem;
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.7rem;
+    }
+
+    .tag {
+      padding: 0.55rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-soft);
+      font-size: 0.92rem;
+    }
+
+    .about-panel {
+      padding: 1.6rem;
+    }
+
+    .info-stack {
+      display: grid;
+      gap: 1rem;
+      margin-top: 1.15rem;
+    }
+
+    .info-item {
+      padding: 1rem 1.1rem;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(148, 171, 203, 0.12);
+    }
+
+    .info-item h3 {
+      margin-bottom: 0.25rem;
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+    }
+
+    .info-item p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .projects-grid,
+    .ach-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1.3rem;
+      margin-top: 2.1rem;
+    }
+
+    .project-card,
+    .ach-card {
+      padding: 1.5rem;
+    }
+
+    .project-card {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+
+    .project-kicker,
+    .ach-year {
+      color: var(--secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.74rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .project-card h3,
+    .ach-card h3 {
+      margin: 0.45rem 0 0.7rem;
+      font-family: "Sora", sans-serif;
+      font-size: 1.2rem;
+      line-height: 1.2;
+    }
+
+    .project-card p,
+    .ach-card p {
+      color: var(--text-muted);
+    }
+
+    .project-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: auto;
+    }
+
+    .chip {
+      padding: 0.36rem 0.65rem;
+      border-radius: 999px;
+      background: var(--secondary-soft);
+      color: var(--secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.74rem;
+    }
+
+    .team-section-header {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 2rem;
+    }
+
+    .team-section-header .section-desc {
+      max-width: 42ch;
+      text-align: right;
+    }
+
+    .team-sub-label {
+      margin-bottom: 1rem;
+      color: var(--secondary);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.8rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .mentors-grid,
+    .students-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+    }
+
+    .students-grid {
+      margin-top: 2.4rem;
+    }
+
+    .member-card {
+      padding: 1.25rem;
+      display: grid;
+      gap: 0.95rem;
+    }
+
+    .member-badge {
+      width: fit-content;
+      padding: 0.28rem 0.6rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-soft);
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .member-card.mentor .member-badge {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .member-avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(114, 172, 216, 0.18), rgba(255, 255, 255, 0.04));
+      border: 1px solid rgba(148, 171, 203, 0.14);
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    .member-card.mentor .member-avatar {
+      background: linear-gradient(135deg, rgba(255, 106, 42, 0.2), rgba(255, 255, 255, 0.04));
+    }
+
+    .member-name {
+      font-family: "Sora", sans-serif;
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+
+    .member-role {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+    }
+
+    .ach-grid {
+      align-items: stretch;
+    }
+
+    .ach-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ach-card::before {
+      content: "";
+      position: absolute;
+      inset: 0 auto 0 0;
+      width: 4px;
+      background: linear-gradient(180deg, var(--accent), var(--secondary));
+    }
+
+    footer {
+      padding: 2.25rem 0 3rem;
+    }
+
+    .footer-inner {
+      width: var(--container);
+      margin: 0 auto;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(148, 171, 203, 0.14);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      color: var(--text-muted);
+      font-size: 0.94rem;
+    }
+
+    .footer-brand {
+      color: var(--text);
+      font-family: "Sora", sans-serif;
+      font-weight: 600;
+    }
+
+    @media (max-width: 1040px) {
+      .hero-inner,
+      .about-grid,
+      .projects-grid,
+      .ach-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-copy {
+        max-width: none;
+      }
+
+      .about-grid {
+        align-items: stretch;
+      }
+
+      .mentors-grid,
+      .students-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 860px) {
+      nav {
+        padding: 0.85rem 0;
+      }
+
+      .nav-toggle {
+        display: inline-flex;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 0.7rem);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.4rem;
+        padding: 0.8rem;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 171, 203, 0.14);
+        background: rgba(15, 24, 39, 0.96);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-10px);
+        transition: opacity 0.22s ease, transform 0.22s ease;
+      }
+
+      nav.is-open .nav-links {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .nav-links a {
+        display: block;
+        padding: 0.85rem 0.9rem;
+        border-radius: 12px;
+      }
+
+      .nav-links a:hover,
+      .nav-links a:focus-visible {
+        background: rgba(255, 255, 255, 0.04);
+      }
+
+      .nav-shell {
+        position: relative;
+      }
+    }
+
+    @media (max-width: 720px) {
+      :root {
+        --container: min(1120px, calc(100% - 1.5rem));
+      }
+
+      .section-pad {
+        padding: 4.5rem 0;
+      }
+
+      #hero {
+        padding-top: 8.4rem;
+      }
+
+      .hero-title {
+        font-size: clamp(2.5rem, 14vw, 4rem);
+      }
+
+      .hero-sub,
+      .section-desc {
+        font-size: 1rem;
+      }
+
+      .hero-stats,
+      .projects-grid,
+      .ach-grid,
+      .about-grid,
+      .mentors-grid,
+      .students-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-cta {
+        flex-direction: column;
+      }
+
+      .btn-primary,
+      .btn-secondary {
+        width: 100%;
+      }
+
+      .team-section-header,
+      .footer-inner {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .hero-panel,
+      .about-panel,
+      .project-card,
+      .ach-card,
+      .member-card {
+        padding: 1.25rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition-duration: 0.01ms !important;
+        transition-delay: 0ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav id="navbar">
+    <div class="nav-shell">
+      <a href="#hero" class="nav-brand">
+        <span class="nav-brand-title">STEAM Robotics</span>
+        <span class="nav-brand-sub">FTC Team 34690</span>
+      </a>
+
+      <button class="nav-toggle" type="button" aria-label="Apri il menu" aria-controls="site-menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <ul class="nav-links" id="site-menu">
+        <li><a href="#about">Chi siamo</a></li>
+        <li><a href="#projects">Progetti</a></li>
+        <li><a href="#team">Team</a></li>
+        <li><a href="#achievements">Percorso</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main>
+    <section id="hero">
+      <div class="container hero-inner">
+        <div class="hero-copy reveal">
+          <div class="hero-badge">FIRST Tech Challenge | Team 34690</div>
+          <h1 class="hero-title">STEAM <span>Robotics</span></h1>
+          <p class="hero-sub">
+            Un team FTC che unisce progettazione meccanica, software e outreach per costruire robot affidabili, crescere come gruppo e rappresentare al meglio la scuola nelle competizioni.
+          </p>
+          <div class="hero-cta">
+            <a href="#projects" class="btn-primary">Esplora i progetti</a>
+            <a href="#team" class="btn-secondary">Scopri il team</a>
+          </div>
+        </div>
+
+        <aside class="hero-panel surface-card reveal reveal-delay-1">
+          <p class="eyebrow">Aree di lavoro</p>
+          <ul class="hero-list">
+            <li>
+              <strong>Design e prototipazione</strong>
+              <span>CAD, meccanica, iterazione rapida e test sul campo.</span>
+            </li>
+            <li>
+              <strong>Software e controllo</strong>
+              <span>TeleOp, autonomia, sensori e sviluppo Java per FTC.</span>
+            </li>
+            <li>
+              <strong>Outreach e partnership</strong>
+              <span>Documentazione, sponsor e relazioni con il territorio.</span>
+            </li>
+          </ul>
+
+          <div class="hero-stats">
+            <div class="stat-item">
+              <strong>12</strong>
+              <span>Membri</span>
+            </div>
+            <div class="stat-item">
+              <strong>4</strong>
+              <span>Mentor</span>
+            </div>
+            <div class="stat-item">
+              <strong>8</strong>
+              <span>Studenti</span>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section id="about" class="section-pad">
+      <div class="container about-grid">
+        <div class="about-copy reveal">
+          <p class="section-label">Chi siamo</p>
+          <h2 class="section-title">Più di un team, <span>un metodo di lavoro</span></h2>
+          <p class="section-desc">
+            STEAM Robotics è il team studentesco del Liceo Adriano Olivetti di Parma che partecipa alla <strong>FIRST Tech Challenge</strong>. Il nostro obiettivo è costruire robot competitivi e, allo stesso tempo, formare studenti capaci di lavorare con responsabilità, precisione e spirito di squadra.
+          </p>
+          <p class="section-desc">
+            Dalla progettazione meccanica alla programmazione autonoma, affrontiamo ogni stagione come un progetto completo: analisi del gioco, prototipazione, documentazione tecnica, comunicazione e collaborazione con mentor e partner.
+          </p>
+          <div class="about-tags">
+            <span class="tag">CAD e progettazione</span>
+            <span class="tag">Java per FTC</span>
+            <span class="tag">Computer vision</span>
+            <span class="tag">Elettronica</span>
+            <span class="tag">Outreach</span>
+            <span class="tag">Documentazione</span>
+          </div>
+        </div>
+
+        <aside class="about-panel surface-card reveal reveal-delay-1">
+          <p class="eyebrow">Come lavoriamo</p>
+          <div class="info-stack">
+            <div class="info-item">
+              <h3>Ruoli chiari</h3>
+              <p>Studenti e mentor collaborano con responsabilità definite, per rendere il lavoro piu ordinato e sostenibile durante la stagione.</p>
+            </div>
+            <div class="info-item">
+              <h3>Iterazione continua</h3>
+              <p>Testiamo, documentiamo e miglioriamo: ogni versione del robot nasce da prove pratiche e feedback misurabili.</p>
+            </div>
+            <div class="info-item">
+              <h3>Valori FTC</h3>
+              <p>Gracious Professionalism e Coopertition guidano il modo in cui progettiamo, gareggiamo e rappresentiamo il team.</p>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section id="projects" class="section-pad">
+      <div class="container">
+        <p class="section-label reveal">Progetti</p>
+        <h2 class="section-title reveal reveal-delay-1">Tre aree, <span>un solo obiettivo</span></h2>
+        <p class="section-desc reveal reveal-delay-2">
+          Il lavoro del team non si ferma al robot. Portiamo avanti in parallelo sviluppo tecnico, processo di squadra e presenza sul territorio.
+        </p>
+
+        <div class="projects-grid">
+          <article class="project-card surface-card reveal reveal-delay-1">
+            <div>
+              <p class="project-kicker">Robot di stagione</p>
+              <h3>Architettura meccanica e test</h3>
+              <p>Studio del gioco FTC, prototipi dei sottosistemi, integrazione delle soluzioni migliori e attenzione all'affidabilità in gara.</p>
+            </div>
+            <div class="project-chips">
+              <span class="chip">CAD</span>
+              <span class="chip">Prototipi</span>
+              <span class="chip">Assemblaggio</span>
+            </div>
+          </article>
+
+          <article class="project-card surface-card reveal reveal-delay-2">
+            <div>
+              <p class="project-kicker">Software</p>
+              <h3>Controllo, autonomia e sensori</h3>
+              <p>Codice Java strutturato per la competizione, gestione dei sensori, telemetria e funzioni autonome pensate per essere robuste e leggibili.</p>
+            </div>
+            <div class="project-chips">
+              <span class="chip">Java</span>
+              <span class="chip">Sensors</span>
+              <span class="chip">Autonomous</span>
+            </div>
+          </article>
+
+          <article class="project-card surface-card reveal reveal-delay-3">
+            <div>
+              <p class="project-kicker">Team development</p>
+              <h3>Documentazione, outreach e comunicazione</h3>
+              <p>Prepariamo materiali utili per raccontare il progetto, organizzare il lavoro interno e rendere il team piu forte anche fuori dal campo gara.</p>
+            </div>
+            <div class="project-chips">
+              <span class="chip">Portfolio</span>
+              <span class="chip">Presentazione team</span>
+              <span class="chip">Comunicazione</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section id="team" class="section-pad">
+      <div class="container">
+        <div class="team-section-header">
+          <div>
+            <p class="section-label reveal">Team</p>
+            <h2 class="section-title reveal reveal-delay-1">Le persone dietro <span>ogni decisione</span></h2>
+          </div>
+          <p class="section-desc reveal reveal-delay-2">
+            Un gruppo compatto di mentor e studenti che lavora insieme su tecnica, organizzazione e crescita del progetto.
+          </p>
+        </div>
+
+        <p class="team-sub-label reveal">Mentor e coach</p>
+        <div class="mentors-grid">
+          <article class="member-card surface-card mentor reveal reveal-delay-1">
+            <div class="member-badge">Mentor</div>
+            <div class="member-avatar">LC</div>
+            <div>
+              <h3 class="member-name">Lorenzo Castellan</h3>
+              <p class="member-role">Professor ITC</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card mentor reveal reveal-delay-2">
+            <div class="member-badge">Mentor</div>
+            <div class="member-avatar">GT</div>
+            <div>
+              <h3 class="member-name">Giovanni Tedeschi</h3>
+              <p class="member-role">Design engineer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card mentor reveal reveal-delay-3">
+            <div class="member-badge">Mentor</div>
+            <div class="member-avatar">LS</div>
+            <div>
+              <h3 class="member-name">Luca Sacchini</h3>
+              <p class="member-role">Java developer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card mentor reveal reveal-delay-4">
+            <div class="member-badge">Mentor</div>
+            <div class="member-avatar">PS</div>
+            <div>
+              <h3 class="member-name">Patrick Silingardi</h3>
+              <p class="member-role">Business e marketing</p>
+            </div>
+          </article>
+        </div>
+
+        <p class="team-sub-label reveal" style="margin-top: 2.4rem;">Studenti</p>
+        <div class="students-grid">
+          <article class="member-card surface-card reveal reveal-delay-1">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">AC</div>
+            <div>
+              <h3 class="member-name">Alessandro Cabassa</h3>
+              <p class="member-role">Java developer ed elettronica</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-2">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">VD</div>
+            <div>
+              <h3 class="member-name">Valentino Deranieri</h3>
+              <p class="member-role">Robotics designer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-3">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">SB</div>
+            <div>
+              <h3 class="member-name">Sofia Bucaram</h3>
+              <p class="member-role">Designer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-4">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">AB</div>
+            <div>
+              <h3 class="member-name">Alice Boccoli</h3>
+              <p class="member-role">Designer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-1">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">FI</div>
+            <div>
+              <h3 class="member-name">Filippo Impellizzeri</h3>
+              <p class="member-role">Robotics designer e CAD</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-2">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">AM</div>
+            <div>
+              <h3 class="member-name">Alessia Manferdini</h3>
+              <p class="member-role">Designer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-3">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">SG</div>
+            <div>
+              <h3 class="member-name">Sofia Giuberti</h3>
+              <p class="member-role">Designer</p>
+            </div>
+          </article>
+
+          <article class="member-card surface-card reveal reveal-delay-4">
+            <div class="member-badge">Studente</div>
+            <div class="member-avatar">FC</div>
+            <div>
+              <h3 class="member-name">Filippo Cottini</h3>
+              <p class="member-role">CAD designer e IT</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <hr class="section-divider" />
+
+    <section id="achievements" class="section-pad">
+      <div class="container">
+        <p class="section-label reveal">Percorso</p>
+        <h2 class="section-title reveal reveal-delay-1">Una base solida per <span>crescere bene</span></h2>
+        <p class="section-desc reveal reveal-delay-2">
+          Questa sezione racconta come il team sta costruendo la propria identità FTC: organizzazione, qualità tecnica e presenza costante nel tempo.
+        </p>
+
+        <div class="ach-grid">
+          <article class="ach-card surface-card reveal reveal-delay-1">
+            <p class="ach-year">2025-2026</p>
+            <h3>Prima stagione strutturata</h3>
+            <p>Il focus è costruire un processo ordinato, con ruoli definiti, documentazione chiara e obiettivi tecnici realistici.</p>
+          </article>
+
+          <article class="ach-card surface-card reveal reveal-delay-2">
+            <p class="ach-year">In corso</p>
+            <h3>Portfolio tecnico del team</h3>
+            <p>Stiamo preparando una presentazione piu completa di robot, codice, CAD e materiali utili per competizioni e attività del team.</p>
+          </article>
+
+          <article class="ach-card surface-card reveal reveal-delay-3">
+            <p class="ach-year">Prossimo step</p>
+            <h3>Partnership e outreach locale</h3>
+            <p>L'obiettivo è consolidare relazioni con aziende, scuola e territorio per dare continuità al progetto anche nelle prossime stagioni.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">STEAM Robotics</div>
+      <div>FIRST Tech Challenge Team 34690</div>
+      <div>&copy; 2026 STEAM Robotics. Tutti i diritti riservati.</div>
+    </div>
+  </footer>
+
+  <script>
+    const navbar = document.getElementById("navbar");
+    const navToggle = document.querySelector(".nav-toggle");
+    const navLinks = document.querySelectorAll(".nav-links a");
+
+    function setNavbarState() {
+      navbar.classList.toggle("is-scrolled", window.scrollY > 12);
+    }
+
+    function closeMenu() {
+      navbar.classList.remove("is-open");
+      document.body.classList.remove("menu-open");
+      navToggle.setAttribute("aria-expanded", "false");
+    }
+
+    navToggle.addEventListener("click", () => {
+      const isOpen = navbar.classList.toggle("is-open");
+      document.body.classList.toggle("menu-open", isOpen);
+      navToggle.setAttribute("aria-expanded", String(isOpen));
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", closeMenu);
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 860) {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener("scroll", setNavbarState, { passive: true });
+    setNavbarState();
+
+    const reveals = document.querySelectorAll(".reveal");
+
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.16 });
+
+      reveals.forEach((element) => observer.observe(element));
+    } else {
+      reveals.forEach((element) => element.classList.add("visible"));
+    }
+  </script>
+</body>
+</html>

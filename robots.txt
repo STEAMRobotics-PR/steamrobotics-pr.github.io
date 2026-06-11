@@ -36,3 +36,6 @@ Allow: /
 Content-Signal: ai-train=no, search=yes, ai-input=yes
 
 Sitemap: https://steamrobotics.it/sitemap.xml
+
+# AI info file (non standard)
+# https://steamrobotics.it/llms.txt

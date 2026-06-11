@@ -36,7 +36,8 @@ jobs:
       - name: Generate sitemap
         uses: cicirello/generate-sitemap@v1
         with:
-          base-url: https://steamrobotics.it
+          base-url-path: https://steamrobotics.it/
+          drop-html-extension: true
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:

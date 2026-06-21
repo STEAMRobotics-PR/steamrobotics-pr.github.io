@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="600" viewBox="0 0 900 600">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07101d"/><stop offset="1" stop-color="#211641"/></linearGradient></defs>
+  <rect width="900" height="600" fill="url(#g)"/>
+  <g stroke="#56d9ff" stroke-opacity=".18"><path d="M0 480h900M0 360h900M0 240h900M0 120h900"/><path d="M120 0v600M240 0v600M360 0v600M480 0v600M600 0v600M720 0v600M840 0v600"/></g>
+  <rect x="110" y="110" width="680" height="380" rx="32" fill="none" stroke="#56d9ff" stroke-opacity=".55" stroke-width="3"/>
+  <circle cx="450" cy="300" r="86" fill="none" stroke="#ffe39a" stroke-width="8" stroke-opacity=".8"/>
+  <text x="450" y="318" text-anchor="middle" fill="#eef8ff" font-family="Arial Black,Arial" font-size="42">STORY 2</text>
+  <text x="450" y="370" text-anchor="middle" fill="#9db1c2" font-family="Arial" font-size="24">replace with real event photo</text>
+</svg>

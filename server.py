@@ -99,7 +99,7 @@ class RangeRequestHandler(SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    port = 80
+    port = 5656
     server = ThreadingHTTPServer(("0.0.0.0", port), RangeRequestHandler)
 
     print(f"Serving with Range support:")
